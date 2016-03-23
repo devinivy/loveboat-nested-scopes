@@ -1,0 +1,48 @@
+{
+  "name": "loveboat-nested-scopes",
+  "version": "1.0.0",
+  "description": "support nested auth scopes in hapi",
+  "main": "lib/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "lab -a code -t 100 -L",
+    "coveralls": "lab -r lcov | coveralls"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devinivy/loveboat-nested-scopes.git"
+  },
+  "keywords": [
+    "hapi",
+    "utility",
+    "preprocessor",
+    "route",
+    "routes",
+    "loveboat",
+    "transform",
+    "scope",
+    "nested"
+  ],
+  "author": "Devin Ivy <devin@bigroomstudios.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devinivy/loveboat-nested-scopes/issues"
+  },
+  "homepage": "https://github.com/devinivy/loveboat-nested-scopes#readme",
+  "dependencies": {
+    "hoek": "3.x.x",
+    "joi": "8.x.x"
+  },
+  "peerDependencies": {
+    "loveboat": ">=1.2.0 <2.0.0"
+  },
+  "devDependencies": {
+    "code": "2.x.x",
+    "coveralls": "2.x.x",
+    "hapi": "13.x.x",
+    "lab": "10.x.x",
+    "loveboat": ">=1.2.0 <2.0.0"
+  }
+}
