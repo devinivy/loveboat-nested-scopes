@@ -32,17 +32,18 @@ To use this transform,
 
 1. Make sure the [loveboat](https://github.com/devinivy/loveboat) hapi plugin is registered to your server.
 2. Tell loveboat that you'd like to use this transform by calling,
-```js
-server.routeTransforms([{
-    transform: require('loveboat-nested-scopes'),
-    options: {
-        scope: 'admin',
-        subscopes: ['basic-user']
-        // Define your nested scopes
-    }
-}]);
-```
-and possibly listing any other transforms you'd like to use.*
+    ```js
+    server.routeTransforms([{
+        transform: require('loveboat-nested-scopes'),
+        options: {
+            scope: 'admin',
+            subscopes: ['basic-user']
+            // Define your nested scopes
+        }
+    }]);
+    ```
+
+    and possibly listing any other transforms you'd like to use.*
 
 3. Register your routes using `server.loveboat()` rather than `server.route()`.
 
