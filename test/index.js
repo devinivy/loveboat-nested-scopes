@@ -20,57 +20,89 @@ const internals = {};
 
 describe('loveboat-nested-scopes', () => {
 
-    it('supports passing no scope options.', (done) => {
+    const scopeOptions = [
+        {
+            scope: 'admin',
+            subscopes: [
+                { scope: 'app' },
+                {
+                    scope: 'user',
+                    subscopes: [
+                        'group-one',
+                        'group-two',
+                        {
+                            scope: 'group-three',
+                            subscopes: [
+                                'group-three-one',
+                                { scope: 'group-three-two' }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        'grandma',
+        { scope: 'grandpa', subscopes: 'dad' }
+    ];
 
-        internals.server((err, server) => {
-
-            expect(err).to.not.exist();
-
-            expect(() => {
-
-                server.routeTransforms({
-                    transform: LoveboatNestedScopes
-                });
-
-                server.loveboat({
-                    method: 'get',
-                    path: '/',
-                    handler: internals.boringHandler,
-                    config: internals.scope(['user'])
-                });
-
-            }).to.not.throw();
-
-            const route = server.match('get', '/');
-            expect(route.settings.auth.access).to.deep.equal([
-                { scope: { selection: ['user'] } }
-            ]);
-
-            done();
-        });
-
-    });
-
-    it('throws when expanding a scope that is not listed.', (done) => {
+    it('integrates with hapi and loveboat.', (done) => {
 
         internals.server((err, server) => {
 
             expect(err).to.not.exist();
 
             server.routeTransforms({
-                transform: LoveboatNestedScopes
+                transform: LoveboatNestedScopes,
+                options: scopeOptions
             });
 
-            expect(() => {
+            server.loveboat({
+                method: 'get',
+                path: '/',
+                handler: internals.boringHandler,
+                config: {
+                    auth: {
+                        access: [
+                            { scope: false },
+                            { scope: 'whatever' },
+                            {
+                                scope: [
+                                    '[+group-three]',
+                                    '[!dad]',
+                                    '[app]',
+                                    'some-scope'
+                                ],
+                                entity: 'app'
+                            }
+                        ]
+                    }
+                }
+            });
 
-                server.loveboat({
-                    method: 'get',
-                    path: '/',
-                    handler: internals.boringHandler,
-                    config: internals.scope(['[user]'])
-                });
-
-            }).to.throw('Scope "user" was not specified in transform options and can\'t be expanded.');
+            const route = server.match('get', '/');
+            expect(route.settings.auth.access).to.deep.equal([
+                { scope: false },
+                { scope: { selection: ['whatever'] } },
+                {
+                    scope: {
+                        required: [
+                            "group-three",
+                            "group-three-two",
+                            "group-three-one"
+                        ],
+                        forbidden: [
+                            "dad",
+                            "grandpa"
+                        ],
+                        selection: [
+                            "app",
+                            "admin",
+                            "some-scope"
+                        ]
+                    },
+                    entity: 'app'
+                }
+            ]);
 
             done();
         });
@@ -92,42 +124,17 @@ describe('loveboat-nested-scopes', () => {
             return handler(access, null, null, options);
         };
 
-        const options = [
-            {
-                scope: 'admin',
-                subscopes: [
-                    { scope: 'app' },
-                    {
-                        scope: 'user',
-                        subscopes: [
-                            'group-one',
-                            'group-two',
-                            {
-                                scope: 'group-three',
-                                subscopes: [
-                                    'group-three-one',
-                                    { scope: 'group-three-two' }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            },
-            'grandma',
-            { scope: 'grandpa' }
-        ];
-
         it('expands simple nested scopes and passes through non-nested scopes.', (done) => {
 
             const input = [{
-                scope: ['[grandma]', 'some-scope', '[group-one]', 'some-other-scope']
+                scope: ['[dad]', 'some-scope', '[group-one]', 'some-other-scope']
             }];
 
             const output = [{
-                scope: ['grandma', 'some-scope', 'group-one', 'user', 'admin', 'some-other-scope']
+                scope: ['dad', 'grandpa', 'some-scope', 'group-one', 'user', 'admin', 'some-other-scope']
             }];
 
-            expect(tryHandler(input, options)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
 
             done();
         });
@@ -152,7 +159,7 @@ describe('loveboat-nested-scopes', () => {
                 }
             ];
 
-            expect(tryHandler(input, options)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
 
             done();
         });
@@ -169,7 +176,7 @@ describe('loveboat-nested-scopes', () => {
                 entity: 'app'
             }];
 
-            expect(tryHandler(input, options)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
 
             done();
         });
@@ -194,7 +201,7 @@ describe('loveboat-nested-scopes', () => {
                 }
             ];
 
-            expect(tryHandler(input, options)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
 
             done();
         });
@@ -209,7 +216,7 @@ describe('loveboat-nested-scopes', () => {
                 scope: ['!group-one', '!user', '!admin']
             }];
 
-            expect(tryHandler(input, options)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
 
             done();
         });
@@ -229,7 +236,7 @@ describe('loveboat-nested-scopes', () => {
                 ]
             }];
 
-            expect(tryHandler(input, options)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
 
             done();
         });
@@ -420,23 +427,4 @@ internals.server = function (cb) {
 internals.boringHandler = function (request, reply) {
 
     reply('ok');
-};
-
-internals.scope = function (access) {
-
-    // [{ scope: [] }]
-    if (Array.isArray(access) &&
-        typeof access[0] === 'object') {
-
-        return { auth: { access } };
-    }
-
-    const scope = access;
-
-    // ['scope1', 'scope2'] or 'scope'
-    return {
-        auth: {
-            access: { scope }
-        }
-    };
 };
