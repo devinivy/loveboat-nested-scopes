@@ -86,18 +86,18 @@ describe('loveboat-nested-scopes', () => {
                 {
                     scope: {
                         required: [
-                            "group-three",
-                            "group-three-two",
-                            "group-three-one"
+                            'group-three',
+                            'group-three-two',
+                            'group-three-one'
                         ],
                         forbidden: [
-                            "dad",
-                            "grandpa"
+                            'dad',
+                            'grandpa'
                         ],
                         selection: [
-                            "app",
-                            "admin",
-                            "some-scope"
+                            'app',
+                            'admin',
+                            'some-scope'
                         ]
                     },
                     entity: 'app'
