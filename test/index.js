@@ -80,7 +80,7 @@ describe('loveboat-nested-scopes', () => {
             });
 
             const route = server.match('get', '/');
-            expect(route.settings.auth.access).to.deep.equal([
+            expect(route.settings.auth.access).to.equal([
                 { scope: false },
                 { scope: { selection: ['whatever'] } },
                 {
@@ -119,7 +119,7 @@ describe('loveboat-nested-scopes', () => {
             const result = Joi.validate(access, match);
 
             expect(result.error).to.not.exist();
-            expect(result.value).to.deep.equal(access);
+            expect(result.value).to.equal(access);
 
             return handler(access, null, null, options);
         };
@@ -134,7 +134,7 @@ describe('loveboat-nested-scopes', () => {
                 scope: ['dad', 'grandpa', 'some-scope', 'group-one', 'user', 'admin', 'some-other-scope']
             }];
 
-            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.equal([output]);
 
             done();
         });
@@ -159,7 +159,7 @@ describe('loveboat-nested-scopes', () => {
                 }
             ];
 
-            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.equal([output]);
 
             done();
         });
@@ -176,7 +176,7 @@ describe('loveboat-nested-scopes', () => {
                 entity: 'app'
             }];
 
-            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.equal([output]);
 
             done();
         });
@@ -201,7 +201,7 @@ describe('loveboat-nested-scopes', () => {
                 }
             ];
 
-            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.equal([output]);
 
             done();
         });
@@ -216,7 +216,7 @@ describe('loveboat-nested-scopes', () => {
                 scope: ['!group-one', '!user', '!admin']
             }];
 
-            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.equal([output]);
 
             done();
         });
@@ -236,7 +236,7 @@ describe('loveboat-nested-scopes', () => {
                 ]
             }];
 
-            expect(tryHandler(input, scopeOptions)).to.deep.equal([output]);
+            expect(tryHandler(input, scopeOptions)).to.equal([output]);
 
             done();
         });
