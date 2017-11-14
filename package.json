@@ -37,13 +37,13 @@
     "joi": "12.x.x"
   },
   "peerDependencies": {
-    "hapi": ">=12.x.x <17",
+    "hapi": ">=12 <17",
     "loveboat": ">=1.2.1 <2.0.0"
   },
   "devDependencies": {
     "code": "4.x.x",
     "coveralls": "3.x.x",
-    "hapi": "16.x.x",
+    "hapi": "12.x.x",
     "lab": "14.x.x",
     "loveboat": ">=1.2.1 <2.0.0"
   }
